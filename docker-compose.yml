@@ -1,0 +1,92 @@
+version: "3.3"
+
+services:
+
+  mongo:
+    container_name: mongo-court-crawler
+    image: mongo:latest
+    ports:
+      - "27017:27017"
+    networks:
+      - court_crawler_network
+    environment:
+      - MONGO_DATABASE=tj-collector-service
+      - MONGO_HOSTS=localhost
+      - MONGO_PASSWORD=tj-collector-service
+      - MONGO_PORTS=27017
+      - MONGO_USERNAME=tj-collector-service
+    volumes:
+      - ./docker/mongodb/:/docker-entrypoint-initdb.d
+
+  sqs:
+    container_name: sqs-court-crawler
+    image: pafortin/goaws
+    ports:
+      - "9324:9324"
+    networks:
+      - court_crawler_network
+    volumes:
+      - ./docker/goaws/:/conf
+
+  chrome:
+    container_name: chrome-court-crawler
+    image: selenium/node-chrome-debug
+    ports:
+      - "9001:5900"
+    networks:
+      - court_crawler_network
+    volumes:
+      - /dev/shm:/dev/shm
+    depends_on:
+      - hub
+    environment:
+      - HUB_PORT_4444_TCP_ADDR=hub
+      - HUB_PORT_4444_TCP_PORT=4444
+      - NODE_MAX_SESSION=5
+      - NODE_MAX_INSTANCES=2
+    links:
+      - hub
+
+  hub:
+    container_name: hub-court-crawler
+    image: selenium/hub
+    ports:
+      - "4444:4444"
+    networks:
+      - court_crawler_network
+
+  api-court-crawler:
+    container_name: api-court-crawler
+    image: gradle
+    ports:
+      - "7000:7000"
+    networks:
+      - court_crawler_network
+    environment:
+      - SERVER_PORT=7000
+      - PROCESS_IMPORT_QUEUE_NAME=default
+      - AWS_ENDPOINT_URL=http://sqs:9324
+      - AWS_REGION=us-east-1
+      - AWS_SECRET_ACCESS_KEY=notValidKey
+      - AWS_ACCESS_KEY_ID=notValidKey
+      - MONGO_DATABASE=tj-collector-service
+      - MONGO_HOSTS=mongo
+      - MONGO_PASSWORD=tj-collector-service
+      - MONGO_PORTS=27017
+      - MONGO_USERNAME=tj-collector-service
+      - COURT_OF_AL_URL_FIRST_DEGREE=https://www2.tjal.jus.br/cpopg/open.do
+      - COURT_OF_AL_URL_SECOND_DEGREE=https://www2.tjal.jus.br/cposg5/open.do
+      - COURT_OF_MS_URL_FIRST_DEGREE=https://esaj.tjms.jus.br/cpopg5/open.do
+      - COURT_OF_MS_URL_SECOND_DEGREE=https://esaj.tjms.jus.br/cposg5/open.do
+      - CHROME_WEB_DRIVER_LOCATION=http://hub:4444/wd/hub
+    depends_on:
+      - sqs
+      - mongo
+      - chrome
+    volumes:
+      - .:/var/code
+    command:
+      bash -c "cd /var/code; gradle run -i"
+
+networks:
+  court_crawler_network:

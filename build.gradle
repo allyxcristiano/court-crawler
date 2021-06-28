@@ -1,0 +1,93 @@
+buildscript {
+    ext {
+        kotlinVersion = '1.3.50'
+    }
+
+    repositories {
+        mavenCentral()
+        jcenter()
+    }
+
+    dependencies {
+        classpath group: 'org.jetbrains.kotlin', name: 'kotlin-gradle-plugin', version: "${kotlinVersion}"
+        classpath group: 'org.jetbrains.kotlin', name: 'kotlin-allopen', version: "${kotlinVersion}"
+        classpath group: 'org.jetbrains.kotlin', name: 'kotlin-noarg', version: "${kotlinVersion}"
+    }
+}
+
+apply plugin: 'idea'
+apply plugin: 'kotlin'
+apply plugin: 'application'
+
+group = 'br.com.jusbrasil'
+version = '1.0.0'
+mainClassName = 'br.com.jusbrasil.Main'
+
+test {
+    environment "SERVER_PORT", "7001"
+    environment "PROCESS_IMPORT_QUEUE_NAME", "default"
+    environment "MONGO_DATABASE", "test"
+    environment "MONGO_HOSTS", "localhost"
+    environment "MONGO_PASSWORD", "test"
+    environment "MONGO_PORTS", "27018"
+    environment "MONGO_USERNAME", "test"
+    environment "COURT_OF_AL_URL_FIRST_DEGREE", "https://www2.tjal.jus.br/cpopg/open.do"
+    environment "COURT_OF_AL_URL_SECOND_DEGREE", "https://www2.tjal.jus.br/cposg5/open.do"
+    environment "COURT_OF_MS_URL_FIRST_DEGREE", "https://esaj.tjms.jus.br/cpopg5/open.do"
+    environment "COURT_OF_MS_URL_SECOND_DEGREE", "https://esaj.tjms.jus.br/cposg5/open.do"
+    environment "CHROME_WEB_DRIVER_LOCATION", "http://localhost:4444/wd/hub"
+    useJUnitPlatform()
+}
+
+repositories {
+    mavenCentral()
+    jcenter()
+}
+
+dependencies {
+    compile "org.jetbrains.kotlin:kotlin-stdlib-jdk8"
+    compile 'io.javalin:javalin:3.4.1'
+    compile 'org.slf4j:slf4j-simple:1.7.26'
+    compile 'org.koin:koin-core:1.0.0'
+    compile 'com.natpryce:konfig:1.6.10.0'
+    compile 'com.fasterxml.jackson.core:jackson-databind:2.10.0.pr1'
+    compile "com.fasterxml.jackson.module:jackson-module-kotlin:2.10.0.pr1"
+    compile 'com.amazonaws:amazon-sqs-java-messaging-lib:1.0.8'
+    compile 'org.litote.kmongo:kmongo:3.9.2'
+    compile 'org.seleniumhq.selenium:selenium-java:3.141.59'
+    compile "com.fasterxml.jackson.datatype:jackson-datatype-jsr310:2.8.6"
+    compile 'io.swagger.core.v3:swagger-core:2.0.8'
+    compile 'cc.vileda:kotlin-openapi3-dsl:0.20.1'
+    compile 'org.webjars:swagger-ui:3.22.2'
+    testCompile 'de.flapdoodle.embed:de.flapdoodle.embed.mongo:2.2.0'
+    testCompile 'io.mockk:mockk:1.8.6'
+    testCompile 'org.junit.jupiter:junit-jupiter-api:5.2.0'
+    testCompile 'org.jetbrains.kotlin:kotlin-test-junit:1.2.61'
+    testCompile 'org.junit.jupiter:junit-jupiter-api:5.2.0'
+    testCompile 'org.spekframework.spek2:spek-dsl-jvm:2.0.2'
+    testCompile 'org.apache.activemq:activemq-broker:5.15.9'
+    testCompile 'org.awaitility:awaitility-kotlin:3.1.6'
+    testCompile 'com.github.kittinunf.fuel:fuel:1.15.0'
+    testRuntimeOnly('org.spekframework.spek2:spek-runner-junit5:2.0.2')
+    testRuntimeOnly 'org.junit.jupiter:junit-jupiter-engine:5.2.0'
+}
+
+compileKotlin {
+    kotlinOptions.jvmTarget = "1.8"
+}
+
+compileTestKotlin {
+    kotlinOptions.jvmTarget = "1.8"
+}
+
+jar {
+    manifest {
+        attributes(
+                'Main-Class': mainClassName,
+                'Implementation-Title': 'Court Crawler',
+                'Implementation-Version': version,
+        )
+    }
+
+    from { configurations.compile.collect { it.isDirectory() ? it : zipTree(it) } }
+}
