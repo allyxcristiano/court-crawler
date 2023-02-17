@@ -1,68 +1,64 @@
 # Court Crawler
 
-Tentando dominar o mundo crawleando tribunais
+Attempting to conquer the world by crawling court websites
 
-## Sumário
+## Summary
 
-- O que é este projeto?
-- O que você vai precisar
-- Executando
-- Uso
-- Terminando execução
-- Executando bateria de testes
+- What is this project?
+- What you'll need
+- Running
+- Usage
+- Stopping execution
+- Running the test suite
 
-## O que é este projeto?
+## What is this project?
 
-Se trata de um desafio técnico onde o objetivo é "crawlear" tribunais de justiça brasileiros, atualmente este serviço é
-capaz de ler páginas de processos de primeiro e segundo grau do [TJ AL](http://www.tjal.jus.br/) 
-e [MS](https://www.tjms.jus.br/).
+This is a technical challenge where the objective is to crawl Brazilian court websites. Currently, this service is capable
+of reading first and second instance pages of cases from [TJ AL](http://www.tjal.jus.br/)
+and [MS](https://www.tjms.jus.br/).
 
-O termo crawlear se refere neste contexto a disponibilizar um serviço capaz de obter as informações primeira e segunda 
-instância (caso existam) de um processo existente nestes tribunais. Estas informações serão salvas em uma estrutura de
-documentos específica com o intuito de facilitar o manuseio destes dados e possibilitar melhor acesso por meio de 
-outras ferramentas.
+The term "crawl" in this context refers to providing a service that can obtain information on the first and second
+instance (if they exist) of a case in these courts. This information will be saved in a specific document structure to
+facilitate the handling of this data and allow for better access through other tools.
 
-## O que você vai precisar
-
-Você precisará ter instalado:
+## What you'll need
 
 * [Docker compose / docker](https://github.com/Yelp/docker-compose/blob/master/docs/install.md)
 
-## Executando
+## Running
 
-Após instalar o docker-compose e clonar este repositório execute o comando `docker-compose up -d` para subir 
-uma instância da API com todas suas dependências configuradas.
+After installing docker-compose and cloning this repository, run the command docker-compose up -d to bring up an
+instance of the API with all its dependencies configured.
 
-A primeira execução demora um pouco pois todas as dependências serão baixadas e configuradas, após seguir este passo 
-o serviço estará disponível em `http://localhost:7000`.
+The first execution takes a while because all dependencies will be downloaded and configured. After following this step,
+the service will be available at http://localhost:7000.
 
-Bônus: Para acompanhar todos os logs execute o comando `docker-compose logs -f -t`.
+Bonus: To follow all logs, run the command docker-compose logs -f -t.
 
-## Uso
+## Usage
 
-1. O swagger está disponível em `http://localhost:7000/docs`.
+1. The Swagger is available at  `http://localhost:7000/docs`.
 
-2. Para ajudar nos testes existem alguns demos dentro do projeto, você pode usar `court-of-al-demo.txt` 
-e `court-of-ms-demo.txt` para fazer requisições de diversos processos com cenários específicos e corner cases para 
-testar o crawler.
+2. To help with testing, there are some demos in the project, you can use `court-of-al-demo.txt`
+and `court-of-ms-demo.txt` to make requests for various scenarios and corner cases to test the crawler.
 
-3. Para ajudar na análise dos processos crawleados e da estrutura de dados dos documentos sem ter que abrir um gestor do 
-mongodb ou usar a linha de comando para analisar o conteúdo crawleado um GET sem paginação foi criado, você poderá 
-acessa-lo em `http://localhost:7000/processes`.
+3. To help with the analysis of crawled cases and the document data structure without having to open a MongoDB manager
+or use the command line to analyze the crawled content, a GET without pagination was created. You can access it at
+`http://localhost:7000/processes`.
 
-## Terminando execução
+## Stopping execution
 
-Para terminar a execução execute o comando `docker-compose stop`.
+To stop the execution, run the command `docker-compose stop`.
 
-## Executando bateria de testes
+## Running the test suite
 
-1. Instale o [gradle](https://gradle.org/install/)
+1. Install [gradle](https://gradle.org/install/)
 
-2. Apague o conteúdo da pasta `/build` que está pasta raiz do projeto 
+2. Delete the contents of the `/build` folder in the project root directory.
 
-3. Inicie os containers necessários executando o comando `docker start hub-court-crawler chrome-court-crawler`
+3. Start the necessary containers by running the command `docker start hub-court-crawler chrome-court-crawler`.
 
-4. Execute o comando `gradle test` para rodar a bateria de testes
+4. Run the command `gradle test` to run the test suite.
 
-5. Após executar os testes pare a execução dos containers executando o comando 
-`docker stop hub-court-crawler chrome-court-crawler`
+5. After running the tests, stop the execution of the containers by running the command
+`docker stop hub-court-crawler chrome-court-crawler`.
